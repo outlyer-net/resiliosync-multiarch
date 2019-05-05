@@ -9,7 +9,9 @@ This repository has just two differences compared to the upstream one:
 
 In practice it should work exactly the same.
 
-The associated Docker Hub repository can be found at [outlyernet/resiliosync-armhf](https://hub.docker.com/r/outlyernet/resiliosync-armhf).
+Links:
+  * [Docker Hub repository `outlyernet/resiliosync-armhf`](https://hub.docker.com/r/outlyernet/resiliosync-armhf)
+  * [Github repository `outlyer-net/resiliosync-docker-armhf`](https://github.com/outlyer-net/resiliosync-docker-armhf)
 
 ---
 > **Below is the official README**
