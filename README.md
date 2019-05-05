@@ -2,10 +2,11 @@
 
 This is a fork of the official [Resilio Sync for Docker repository](https://github.com/bt-sync/sync-docker) with small changes to be used on the `armhf` architecture, as found on many Single Board Computers (e.g. the Raspberry Pi).
 
-This repository has just two differences compared to the upstream one:
+This repository has just a few key differences compared to the upstream one:
   1. It uses ARMHF binaries
   1. It is based on a _debian stable slim_ image instead of on an Ubuntu image.
       * A separate `Dockerfile` based on Ubuntu is provided (`Dockerfile.ubuntu`).
+  1. It includes hooks for the Docker Hub to successfully auto-build images.
 
 In practice it should work exactly the same.
 
