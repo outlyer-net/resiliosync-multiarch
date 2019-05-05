@@ -8,7 +8,7 @@ This repository has just a few key differences compared to the upstream one:
       * A separate `Dockerfile` based on Ubuntu is provided (`Dockerfile.ubuntu`).
   1. It includes hooks for the Docker Hub to successfully auto-build images.
 
-In practice it should work exactly the same.
+In practice it should work exactly the same as the official one.
 
 Links:
   * [Docker Hub repository `outlyernet/resiliosync-armhf`](https://hub.docker.com/r/outlyernet/resiliosync-armhf)
