@@ -3,7 +3,7 @@
 # VERSION               0.1
 #
 
-FROM ubuntu
+FROM debian:stretch-slim
 MAINTAINER Toni Corvera <outlyer@gmail.com>
 LABEL com.resilio.version="2.6.3"
 
