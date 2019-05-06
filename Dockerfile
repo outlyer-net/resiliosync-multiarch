@@ -5,7 +5,9 @@
 
 FROM arm32v7/debian:stretch-slim
 ARG RELEASE="2.6.3"
-MAINTAINER Toni Corvera <outlyer@gmail.com>
+# NOTE MAINTAINER is deprecated <https://docs.docker.com/engine/reference/builder/#maintainer-deprecated>
+#MAINTAINER Toni Corvera <outlyer@gmail.com>
+LABEL maintainer="Toni Corvera <outlyer@gmail.com>"
 LABEL com.resilio.version="$RELEASE"
 
 COPY qemu-arm-static /usr/bin
