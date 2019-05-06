@@ -12,8 +12,12 @@ LABEL maintainer="Toni Corvera <outlyer@gmail.com>"
 LABEL net.outlyer.resilio.version="$RELEASE"
 
 COPY qemu-arm-static /usr/bin
-ADD https://download-cdn.resilio.com/$RELEASE/linux-armhf/resilio-sync_armhf.tar.gz /tmp/sync.tgz
-RUN tar -xf /tmp/sync.tgz -C /usr/bin rslsync && rm -f /tmp/sync.tgz
+# NOTE that using ADD to download files is actually discouraged
+# <https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#add-or-copy>
+#ADD https://download-cdn.resilio.com/$RELEASE/linux-armhf/resilio-sync_armhf.tar.gz /tmp/sync.tgz
+RUN wget -O /tmp/sync.tgz https://download-cdn.resilio.com/$RELEASE/linux-armhf/resilio-sync_armhf.tar.gz \
+	&& tar -xf /tmp/sync.tgz -C /usr/bin rslsync \
+	&& rm -f /tmp/sync.tgz
 
 COPY sync.conf.default /etc/
 COPY run_sync /usr/bin/
