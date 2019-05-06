@@ -11,7 +11,9 @@ LABEL maintainer="Toni Corvera <outlyer@gmail.com>"
 #LABEL com.resilio.version="$RELEASE"
 LABEL net.outlyer.resilio.version="$RELEASE"
 
-COPY qemu-arm-static /usr/bin
+# To be used in Docker Hub autobuilds. Allows building the image on amd64
+#COPY qemu-arm-static /usr/bin
+
 # NOTE that using ADD to download files is actually discouraged
 # <https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#add-or-copy>
 #ADD https://download-cdn.resilio.com/$RELEASE/linux-armhf/resilio-sync_armhf.tar.gz /tmp/sync.tgz
