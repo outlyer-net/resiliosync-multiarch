@@ -8,7 +8,8 @@ ARG RELEASE="2.6.3"
 # NOTE MAINTAINER is deprecated <https://docs.docker.com/engine/reference/builder/#maintainer-deprecated>
 #MAINTAINER Toni Corvera <outlyer@gmail.com>
 LABEL maintainer="Toni Corvera <outlyer@gmail.com>"
-LABEL com.resilio.version="$RELEASE"
+#LABEL com.resilio.version="$RELEASE"
+LABEL net.outlyer.resilio.version="$RELEASE"
 
 COPY qemu-arm-static /usr/bin
 ADD https://download-cdn.resilio.com/$RELEASE/linux-armhf/resilio-sync_armhf.tar.gz /tmp/sync.tgz
