@@ -1,5 +1,11 @@
 ## Unofficial ARMHF Resilio Sync Docker files
 
+> **WARNING:** \
+> This is still somewhat volatile while I settle on how to
+handle these images, the tags in particular are being re-defined
+as I make small tweaks. Please keep it mind (everything should work, though).\
+I'll remove this warning once the repository stabilises.
+
 This is a fork of the official [Resilio Sync for Docker repository](https://github.com/bt-sync/sync-docker) with small changes to be used on the `armhf` architecture, as found on many Single Board Computers (e.g. the Raspberry Pi).
 
 This repository has just a few key differences compared to the upstream one:
