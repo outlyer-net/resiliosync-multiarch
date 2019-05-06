@@ -15,6 +15,8 @@ LABEL net.outlyer.resilio.version="$RELEASE"
 
 ADD https://download-cdn.resilio.com/$RELEASE/linux-armhf/resilio-sync_armhf.tar.gz /tmp/sync.tgz
 RUN tar -xf /tmp/sync.tgz -C /usr/bin rslsync \
+	&& tar -xf /tmp/sync.tgz -C / LICENSE.TXT \
+	&& mv /LICENSE.TXT /Resilio_Sync-LICENSE.txt \
 	&& rm -f /tmp/sync.tgz \
 	&& rm -f /usr/bin/wget
 
