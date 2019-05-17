@@ -1,11 +1,12 @@
 # Official and semi-official architectures: https://github.com/docker-library/official-images#architectures-other-than-amd64
 ARCHITECTURES:=amd64 armhf i386 armle arm64
-IMAGE_NAME=outlyernet/resiliosync-docker-multiarch
+IMAGE_NAME=outlyernet/resiliosync-docker-armhf
 
 DOCKERFILE_IN=Dockerfile.in
 DOCKERFILES=$(addsuffix .Dockerfile,$(ARCHITECTURES))
 # The colon confuses make, leave it for later
-IMAGES=$(addprefix $(IMAGE_NAME).latest-,$(ARCHITECTURES))
+IMAGES_TARGET=$(addprefix $(IMAGE_NAME).latest-,$(ARCHITECTURES))
+IMAGES=$(addprefix $(IMAGE_NAME):latest-,$(ARCHITECTURES))
 
 # Download URLs take the form:
 # https://download-cdn.resilio.com/$RELEASE/linux-$ARCH/resilio-sync_$ARCH.tar.gz
@@ -35,27 +36,25 @@ DOCKER_PREFIX=$(subst armhf,arm32v7,$(subst armle,arm32v5,$(subst arm64,arm64v8,
 #RESILIO_ARCH=$(shell echo $* | sed -e 's/armle/arm/' -e 's/amd64/x64/')
 RESILIO_ARCH=$(subst armle,arm,$(subst amd64,x64,$*))
 
-all: $(DOCKERFILES) $(IMAGES)
+all: $(DOCKERFILES) $(IMAGES_TARGET)
 
 %.Dockerfile: $(DOCKERFILE_IN)
 	sed -e 's#DOCKER_PREFIX=.*$$#DOCKER_PREFIX=$(DOCKER_PREFIX)#' \
 		-e 's!ARCHITECTURE=.*$$!ARCHITECTURE=$(RESILIO_ARCH)!' $< > $@
 
 $(IMAGE_NAME).latest-%: %.Dockerfile
-	docker build -t $(subst .,:,$@) -f $< ..
+	docker build -t $(subst .,:,$@) -f $< .
 
-manifest:
-	@echo docker manifest create $(IMAGE_NAME):latest \
-		$(IMAGES)
+# Old variants. TODO: Merge
 
-Dockerfile.ubuntu: ../Dockerfile
-	sed 's/debian:stretch-slim/ubuntu/' $< > $@
+#Dockerfile.ubuntu: ../Dockerfile
+#	sed 's/debian:stretch-slim/ubuntu/' $< > $@
 
-Dockerfile.autobuild-debian: ../Dockerfile
-	sed 's/#COPY qemu/COPY qemu/' $< > $@
+#Dockerfile.autobuild-debian: ../Dockerfile
+#	sed 's/#COPY qemu/COPY qemu/' $< > $@
 
-Dockerfile.autobuild-ubuntu: Dockerfile.autobuild-debian
-	sed 's/debian:stretch-slim/ubuntu/' $< > $@
+#Dockerfile.autobuild-ubuntu: Dockerfile.autobuild-debian
+#	sed 's/debian:stretch-slim/ubuntu/' $< > $@
 
 distclean:
 	$(RM) $(DOCKERFILES)
