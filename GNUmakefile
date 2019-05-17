@@ -40,7 +40,7 @@ DOCKER_PREFIX=$(subst armhf,arm32v7,$(subst armle,arm32v5,$(subst arm64,arm64v8,
 #RESILIO_ARCH=$(shell echo $* | sed -e 's/armle/arm/' -e 's/amd64/x64/')
 RESILIO_ARCH=$(subst armle,arm,$(subst amd64,x64,$*))
 
-all: $(DOCKERFILES) $(IMAGES_TARGET)
+all: $(DOCKERFILES) $(IMAGES_TARGET) armle.Dockerfile
 
 %.Dockerfile: $(DOCKERFILE_IN)
 	sed -e 's#DOCKER_PREFIX=.*$$#DOCKER_PREFIX=$(DOCKER_PREFIX)#' \
