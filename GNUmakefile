@@ -1,12 +1,16 @@
 # Official and semi-official architectures: https://github.com/docker-library/official-images#architectures-other-than-amd64
-ARCHITECTURES:=amd64 armhf i386 armle arm64
-IMAGE_NAME=outlyernet/resiliosync-docker-armhf
+# TODO: Docker Hub doesn't appear to differentiate between armle and armhf
+ARCHITECTURES:=amd64 armhf i386 arm64
+IMAGE_NAME=outlyernet/resiliosync-multiarch
 
 DOCKERFILE_IN=Dockerfile.in
 DOCKERFILES=$(addsuffix .Dockerfile,$(ARCHITECTURES))
 # The colon confuses make, leave it for later
 IMAGES_TARGET=$(addprefix $(IMAGE_NAME).latest-,$(ARCHITECTURES))
 IMAGES=$(addprefix $(IMAGE_NAME):latest-,$(ARCHITECTURES))
+
+RELEASE=$(shell sed -e '/ARG RELEASE=/!d' -e 's/^[^"]*//' -e 's/"//g' Dockerfile.in)
+VERSIONED_IMAGES=$(addprefix $(IMAGE_NAME):$(RELEASE)-,$(ARCHITECTURES))
 
 # Download URLs take the form:
 # https://download-cdn.resilio.com/$RELEASE/linux-$ARCH/resilio-sync_$ARCH.tar.gz
@@ -44,6 +48,37 @@ all: $(DOCKERFILES) $(IMAGES_TARGET)
 
 $(IMAGE_NAME).latest-%: %.Dockerfile
 	docker build -t $(subst .,:,$@) -f $< .
+
+# Add versioned tags to the images
+tag: $(IMAGES_TARGET)
+	for image in $(IMAGES); do \
+		docker tag $$image `echo $$image | sed 's/latest/$(RELEASE)/g'`; \
+	done
+
+# Repository-specific stuff. Can only be used as-is by me
+
+push-images: tag
+	for image in $(IMAGES) $(VERSIONED_IMAGES); do \
+		docker push $$image ; \
+	done
+
+manifest: push-images
+	env DOCKER_CLI_EXPERIMENTAL=enabled \
+		docker manifest create $(IMAGE_NAME):latest \
+			$(IMAGES)
+	env DOCKER_CLI_EXPERIMENTAL=enabled \
+		docker manifest create $(IMAGE_NAME):$(RELEASE) \
+			$(VERSIONED_IMAGES)	
+
+# Forceful, but gets rid of trouble
+# <https://github.com/docker/cli/issues/954>
+push-manifest: manifest
+	env DOCKER_CLI_EXPERIMENTAL=enabled \
+		docker manifest push --purge $(IMAGE_NAME):latest
+	env DOCKER_CLI_EXPERIMENTAL=enabled \
+		docker manifest push --purge $(IMAGE_NAME):$(RELEASE)
+
+push: push-manifest
 
 # Old variants. TODO: Merge
 
