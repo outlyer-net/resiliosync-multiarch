@@ -6,19 +6,20 @@ handle these images, the tags in particular are being re-defined
 as I make small tweaks. Please keep it mind (everything should work, though).\
 I'll remove this warning once the repository stabilises.
 
-This is a fork of the official [Resilio Sync for Docker repository](https://github.com/bt-sync/sync-docker) with small changes to be used on the `armhf` architecture, as found on many Single Board Computers (e.g. the Raspberry Pi).
+This is a fork of the official [Resilio Sync for Docker repository](https://github.com/bt-sync/sync-docker) with small changes to be used on the all architectures supported by Resilio Sync.
 
 This repository has just a few key differences compared to the upstream one:
-  1. It uses ARMHF binaries
-  1. It is based on a _debian stable slim_ image instead of on an Ubuntu image.
-      * A separate `Dockerfile` based on Ubuntu is provided (`Dockerfile.ubuntu`).
-  1. It includes hooks for the Docker Hub to successfully auto-build images.
 
-In practice it should work exactly the same as the official one.
+  1. A makefile is provided to generate the different `Dockerfile`s and images.
+  1. Multiple `Dockerfile`s are provided, one per arch. They are different from the official one in the way the image is built, to ease multi-architecture support, but the end structure is the same, except the License for Resilio Sync is also included in the image.
+  1. They're based on a _debian stable slim_ image instead of on an Ubuntu image.
+
+In practice they should work exactly the same as the official one.
 
 Links:
-  * [Docker Hub repository `outlyernet/resiliosync-armhf`](https://hub.docker.com/r/outlyernet/resiliosync-armhf)
-  * [Github repository `outlyer-net/resiliosync-docker-armhf`](https://github.com/outlyer-net/resiliosync-docker-armhf)
+
+* [Docker Hub repository `outlyernet/resiliosync-multiarch`](https://hub.docker.com/r/outlyernet/resiliosync-armhf)
+* [Github repository `outlyer-net/resiliosync-docker-multiarch`](https://github.com/outlyer-net/resiliosync-docker-armhf)
 
 ---
 > **Below is the official README**
