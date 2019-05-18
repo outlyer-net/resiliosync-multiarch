@@ -12,11 +12,11 @@ EXTRA_DOCKERFILES=$(addsuffix .Dockerfile,$(EXTRA_ARCHES))
 IMAGES_TARGET=$(addprefix $(IMAGE_NAME).latest-,$(ARCHITECTURES))
 EXTRA_IMAGES_TARGET=$(addprefix $(IMAGE_NAME).latest-,$(EXTRA_ARCHES))
 IMAGES=$(addprefix $(IMAGE_NAME):latest-,$(ARCHITECTURES))
-EXTRA_IMAGES=$(addprefix $(IMAGE_NAME):latest-,$(EXTRA_ARCHITECTURES))
+EXTRA_IMAGES=$(addprefix $(IMAGE_NAME):latest-,$(EXTRA_ARCHES))
 
 RELEASE=$(shell sed -e '/ARG RELEASE=/!d' -e 's/^[^"]*//' -e 's/"//g' Dockerfile.in)
 VERSIONED_IMAGES=$(addprefix $(IMAGE_NAME):$(RELEASE)-,$(ARCHITECTURES))
-EXTRA_VERSIONED_IMAGES=$(addprefix $(IMAGE_NAME):$(RELEASE)-,$(EXTRA_ARCHITECTURES))
+EXTRA_VERSIONED_IMAGES=$(addprefix $(IMAGE_NAME):$(RELEASE)-,$(EXTRA_ARCHES))
 
 # Download URLs take the form:
 # https://download-cdn.resilio.com/$RELEASE/linux-$ARCH/resilio-sync_$ARCH.tar.gz
@@ -57,7 +57,7 @@ $(IMAGE_NAME).latest-%: %.Dockerfile
 
 # Add versioned tags to the images
 tag: $(IMAGES_TARGET) $(EXTRA_IMAGES_TARGET)
-	for image in $(IMAGES); do \
+	for image in $(IMAGES) $(EXTRA_IMAGES); do \
 		docker tag $$image `echo $$image | sed 's/latest/$(RELEASE)/g'`; \
 	done
 
