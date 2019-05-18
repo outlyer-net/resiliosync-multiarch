@@ -1,6 +1,8 @@
-# Resilio Sync
+# Unofficial Resilio Sync
 #
-# VERSION               0.1
+# This Dockerfile creates an image for the amd64 architecture.
+#
+# <https://github.com/outlyer-net/resiliosync-docker-multiarch>
 #
 # Must be defined before the first FROM
 ARG DOCKER_PREFIX=amd64

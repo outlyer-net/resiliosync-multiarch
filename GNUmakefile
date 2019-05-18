@@ -50,7 +50,8 @@ all: $(DOCKERFILES) $(EXTRA_DOCKERFILES) $(IMAGES_TARGET) $(EXTRA_IMAGES_TARGET)
 
 %.Dockerfile: $(DOCKERFILE_IN)
 	sed -e 's#DOCKER_PREFIX=.*$$#DOCKER_PREFIX=$(DOCKER_PREFIX)#' \
-		-e 's!ARCHITECTURE=.*$$!ARCHITECTURE=$(RESILIO_ARCH)!' $< > $@
+		-e 's!ARCHITECTURE=.*$$!ARCHITECTURE=$(RESILIO_ARCH)!' \
+		-e 's/armhf architecture\./$* architecture\./' $< > $@
 
 $(IMAGE_NAME).latest-%: %.Dockerfile
 	docker build -t $(subst .,:,$@) -f $< .
