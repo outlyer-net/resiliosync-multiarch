@@ -23,6 +23,7 @@ FROM ${DOCKER_PREFIX}/debian:stretch-slim
 #MAINTAINER Toni Corvera <outlyer@gmail.com>
 LABEL maintainer="Toni Corvera <outlyer@gmail.com>"
 #LABEL com.resilio.version="$RELEASE"
+ARG RELEASE="2.6.3"
 LABEL net.outlyer.resilio.version="$RELEASE"
 
 COPY --from=0 /tmp/rslsync /usr/bin/
