@@ -1,20 +1,5 @@
-#!/bin/bash
+#!/bin/sh
 
-REPOSITORY=outlyernet/resiliosync-armhf
-RUN_PREFIX="sudo"
-RELEASE=$(sed -e '/RELEASE=/!d' -e 's/^.*RELEASE="//' -e 's/"//' Dockerfile)
+echo "***** [git pre-push hook]: Building images and publishing..."
+$RUN_PREFIX make push
 
-echo "***** [git pre-push hook]: Building images locally..."
-# Standard
-$RUN_PREFIX docker build -t $REPOSITORY:latest-debian -t $REPOSITORY:$RELEASE-debian \
-                         -t $REPOSITORY:latest -t $REPOSITORY:$RELEASE .
-# Ubuntu
-$RUN_PREFIX docker build -f variants/Dockerfile.ubuntu -t $REPOSITORY:latest-ubuntu -t $REPOSITORY:$RELEASE-ubuntu .
-
-echo "***** [git pre-push hook]: Publishing..."
-all_tags="latest $RELEASE latest-debian $RELEASE-debian latest-ubuntu $RELEASE-ubuntu"
-for TAG in $all_tags; do
-    $RUN_PREFIX docker push $REPOSITORY:$TAG
-done
-
-# The ".autobuild-*" dockerfiles are only used on Docker Hub

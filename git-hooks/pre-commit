@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 
 # Ensure the variants are always fresh
 
-echo "***** [git pre-commit hook]: Updating Dockerfile variants if needed. Don't forget to commit them."
-make -C variants
+echo "***** [git pre-commit hook]: Updating Dockerfiles if needed. Don't forget to commit them."
+make *.Dockerfile
