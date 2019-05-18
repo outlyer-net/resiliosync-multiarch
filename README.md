@@ -1,4 +1,4 @@
-## Unofficial ARMHF Resilio Sync Docker files
+## Unofficial Multi-architecture Resilio Sync Docker files
 
 > **WARNING:** \
 > This is still somewhat volatile while I settle on how to
@@ -15,6 +15,14 @@ This repository has just a few key differences compared to the upstream one:
   1. They're based on a _debian stable slim_ image instead of on an Ubuntu image.
 
 In practice they should work exactly the same as the official one.
+
+The `Dockerfile`s:
+
+* `amd64.Dockerfile`: For AMD64 aka x86_64 aka x64 (64 bit PC)
+* `arm64.Dockerfile`: For ARM64 aka ARMv8 aka AArch64 (64 bit ARM)
+* `armhf.Dockerfile`: For armhf aka ARMv7 (and up), (32 bit ARM with hardware float support). Superseded by `arm64`.
+* `armle.Dockerfile`: For armle aka EABI ARM (ARMv5 and up), (32 bit ARM). Superseded by `armhf` and `arm64`. Docker Hub does not provided official support for this architecture. NOTE: This image isn't a part of the auto-selected architecture images (e.g. `resiliosync-multiarch:latest`), you'll have to use `resiliosync-multiarch:armle-latest` directly.
+* `i386.Dockerfile`: For i386 aka x86 aka IA-32 (32 bit PC). Superseded by `amd64`. Docker Hub does not provided official support for this architecture.
 
 Links:
 
