@@ -6,7 +6,7 @@ volumes:
 
 services:
   resilio_sync:
-    image: outlyernet/resiliosync-armhf
+    image: outlyernet/resiliosync-multiarch
     restart: always
     ports:
      - 127.0.0.1:9999:8888
