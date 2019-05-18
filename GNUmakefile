@@ -1,16 +1,22 @@
 # Official and semi-official architectures: https://github.com/docker-library/official-images#architectures-other-than-amd64
 # TODO: Docker Hub doesn't appear to differentiate between armle and armhf
-ARCHITECTURES:=amd64 armhf i386 arm64
+ARCHITECTURES=amd64 armhf i386 arm64
+EXTRA_ARCHES=armle
 IMAGE_NAME=outlyernet/resiliosync-multiarch
-
+# Dockerfile.in: Dockerfile template
 DOCKERFILE_IN=Dockerfile.in
+
 DOCKERFILES=$(addsuffix .Dockerfile,$(ARCHITECTURES))
+EXTRA_DOCKERFILES=$(addsuffix .Dockerfile,$(EXTRA_ARCHES))
 # The colon confuses make, leave it for later
 IMAGES_TARGET=$(addprefix $(IMAGE_NAME).latest-,$(ARCHITECTURES))
+EXTRA_IMAGES_TARGET=$(addprefix $(IMAGE_NAME).latest-,$(EXTRA_ARCHES))
 IMAGES=$(addprefix $(IMAGE_NAME):latest-,$(ARCHITECTURES))
+EXTRA_IMAGES=$(addprefix $(IMAGE_NAME):latest-,$(EXTRA_ARCHITECTURES))
 
 RELEASE=$(shell sed -e '/ARG RELEASE=/!d' -e 's/^[^"]*//' -e 's/"//g' Dockerfile.in)
 VERSIONED_IMAGES=$(addprefix $(IMAGE_NAME):$(RELEASE)-,$(ARCHITECTURES))
+EXTRA_VERSIONED_IMAGES=$(addprefix $(IMAGE_NAME):$(RELEASE)-,$(EXTRA_ARCHITECTURES))
 
 # Download URLs take the form:
 # https://download-cdn.resilio.com/$RELEASE/linux-$ARCH/resilio-sync_$ARCH.tar.gz
@@ -40,7 +46,7 @@ DOCKER_PREFIX=$(subst armhf,arm32v7,$(subst armle,arm32v5,$(subst arm64,arm64v8,
 #RESILIO_ARCH=$(shell echo $* | sed -e 's/armle/arm/' -e 's/amd64/x64/')
 RESILIO_ARCH=$(subst armle,arm,$(subst amd64,x64,$*))
 
-all: $(DOCKERFILES) $(IMAGES_TARGET) armle.Dockerfile
+all: $(DOCKERFILES) $(EXTRA_DOCKERFILES) $(IMAGES_TARGET) $(EXTRA_IMAGES_TARGET)
 
 %.Dockerfile: $(DOCKERFILE_IN)
 	sed -e 's#DOCKER_PREFIX=.*$$#DOCKER_PREFIX=$(DOCKER_PREFIX)#' \
@@ -50,7 +56,7 @@ $(IMAGE_NAME).latest-%: %.Dockerfile
 	docker build -t $(subst .,:,$@) -f $< .
 
 # Add versioned tags to the images
-tag: $(IMAGES_TARGET)
+tag: $(IMAGES_TARGET) $(EXTRA_IMAGES_TARGET)
 	for image in $(IMAGES); do \
 		docker tag $$image `echo $$image | sed 's/latest/$(RELEASE)/g'`; \
 	done
@@ -58,10 +64,11 @@ tag: $(IMAGES_TARGET)
 # Repository-specific stuff. Can only be used as-is by me
 
 push-images: tag
-	for image in $(IMAGES) $(VERSIONED_IMAGES); do \
+	for image in $(IMAGES) $(VERSIONED_IMAGES) $(EXTRA_IMAGES) $(EXTRA_VERSIONED_IMAGES); do \
 		docker push $$image ; \
 	done
 
+# The manifest doesn't include the EXTRA images
 manifest: push-images
 	env DOCKER_CLI_EXPERIMENTAL=enabled \
 		docker manifest create $(IMAGE_NAME):latest \
