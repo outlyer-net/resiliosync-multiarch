@@ -24,7 +24,29 @@ The `Dockerfile`s:
 * `armle.Dockerfile`: For armle aka EABI ARM (ARMv5 and up), (32 bit ARM). Superseded by `armhf` and `arm64`. Docker Hub does not provided official support for this architecture. NOTE: This image isn't a part of the auto-selected architecture images (e.g. `resiliosync-multiarch:latest`), you'll have to use `resiliosync-multiarch:armle-latest` directly.
 * `i386.Dockerfile`: For i386 aka x86 aka IA-32 (32 bit PC). Superseded by `amd64`. Docker Hub does not provided official support for this architecture.
 
-Links:
+### Pulling the image from Docker Hub
+
+For the architectures included in the multiarch support (`amd64`, `armhf`, `arm64` and `i386`):
+
+    # docker pull outlyernet/resiliosync-multiarch
+
+which is equivalent to
+
+    # docker pull outlyernet/resiliosync-multiarch:latest
+
+may also use the version tag:
+
+    # docker pull outlyernet/resiliosync-multiarch:2.6.3
+
+As of this writing images for ARMv5 or ARMv6 (`armle`) are excluded from the automatic architecture selection mechanism, since Docker Hub doesn't appear to distinguish them from ARMv7. For those use:
+
+    # docker pull outlyernet/resiliosync-multiarch:latest-armle
+
+or
+
+    # docker pull outlyernet/resiliosync-multiarch:2.6.3-armle
+
+### Links
 
 * [Docker Hub repository `outlyernet/resiliosync-multiarch`](https://hub.docker.com/r/outlyernet/resiliosync-armhf)
 * [Github repository `outlyer-net/resiliosync-docker-multiarch`](https://github.com/outlyer-net/resiliosync-docker-armhf)
