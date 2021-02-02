@@ -48,8 +48,8 @@ or
 
 ### Links
 
-* [Docker Hub repository `outlyernet/resiliosync-multiarch`](https://hub.docker.com/r/outlyernet/resiliosync-armhf)
-* [Github repository `outlyer-net/resiliosync-docker-multiarch`](https://github.com/outlyer-net/resiliosync-docker-armhf)
+* [Docker Hub repository `outlyernet/resiliosync-multiarch`](https://hub.docker.com/r/outlyernet/resiliosync-multiarch)
+* [Github repository `outlyer-net/resiliosync-docker-multiarch`](https://github.com/outlyer-net/resiliosync-docker-multiarch)
 
 ---
 > **Below is the official README**
