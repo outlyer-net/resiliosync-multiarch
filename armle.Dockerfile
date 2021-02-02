@@ -35,8 +35,14 @@ COPY --from=0 /tmp/LICENSE.TXT /Resilio_Sync-LICENSE.txt
 COPY sync.conf.default /etc/
 COPY run_sync /usr/bin/
 
-EXPOSE 8888
-EXPOSE 55555
+# webui port
+EXPOSE 8888/tcp
+
+# listening port
+EXPOSE 55555/tcp
+
+# listening port
+EXPOSE 55555/udp
 
 VOLUME /mnt/sync
 
