@@ -6,7 +6,7 @@
 #
 # Must be defined before the first FROM
 ARG DOCKER_PREFIX=arm32v7
-ARG RELEASE="2.6.4"
+ARG RELEASE="2.7.2"
 # Stage 0: "Builder" stage
 # When creating the images for other architectures
 #  commands (like mkdir, tar, mv...) won't be usable, so do the work here
