@@ -1,17 +1,77 @@
 ## Unofficial Multi-architecture Resilio Sync Docker files
 
+This is a fork of the official [Resilio Sync for Docker repository](https://github.com/bt-sync/sync-docker) with small changes to be used on all architectures supported by Resilio Sync.
+
+### Running with Docker Compose
+
+This is my recommended way of running.
+
+Edit `docker-compose/docker-compose.yml` to fit your needs, then:
+
+```shell
+cd docker-compose
+docker compose up -d
+```
+
+### Running with Docker
+
+See [upstream usage instructions](#usage) below, simple example:
+
+```shell
+docker run -d --name Sync \
+           -p 127.0.0.1:8888:8888 \
+           -p 55555/tcp \
+           -p 55555/udp \
+           -v ./data:/mnt/sync \
+           -v /etc/localtime:/etc/localtime:ro \
+           --restart always \
+           outlyernet/resiliosync-multiarch
+```
+
+### Pulling the image from Docker Hub
+
+For the architectures included in the multiarch support (`amd64`, `armhf`, `arm64` and `i386`):
+
+```shell
+docker pull outlyernet/resiliosync-multiarch
+```
+
+which is equivalent to
+
+```shell
+docker pull outlyernet/resiliosync-multiarch:latest
+```
+
+may also use the version tag:
+
+```shell
+docker pull outlyernet/resiliosync-multiarch:2.7.3
+```
+
+As of this writing images for ARMv5 or ARMv6 (`armle`) are excluded from the automatic architecture selection mechanism, since Docker Hub doesn't appear to distinguish them from ARMv7. For those use:
+
+```shell
+docker pull outlyernet/resiliosync-multiarch:latest-armle
+```
+
+or
+
+```shell
+docker pull outlyernet/resiliosync-multiarch:2.6.3-armle
+```
+
+### Build instructions
+
 > **WARNING:** \
 > This is still somewhat volatile while I settle on how to
 handle these images, the tags in particular are being re-defined
 as I make small tweaks. Please keep it mind (everything should work, though).\
 I'll remove this warning once the repository stabilises.
 
-This is a fork of the official [Resilio Sync for Docker repository](https://github.com/bt-sync/sync-docker) with small changes to be used on the all architectures supported by Resilio Sync.
-
 This repository has just a few key differences compared to the upstream one:
 
-  1. A makefile is provided to generate the different `Dockerfile`s and images.
   1. Multiple `Dockerfile`s are provided, one per arch. They are different from the official one in the way the image is built, to ease multi-architecture support, but the end structure is the same, except the License for Resilio Sync is also included in the image.
+  1. A makefile is provided to generate the different `Dockerfile`s and images.
   1. They're based on a _debian stable slim_ image instead of on an Ubuntu image.
 
 In practice they should work exactly the same as the official one.
@@ -23,28 +83,6 @@ The `Dockerfile`s:
 * `armhf.Dockerfile`: For armhf aka ARMv7 (and up), (32 bit ARM with hardware float support). Superseded by `arm64`.
 * `armle.Dockerfile`: For armle aka EABI ARM (ARMv5 and up), (32 bit ARM). Superseded by `armhf` and `arm64`. Docker Hub does not provided official support for this architecture. NOTE: This image isn't a part of the auto-selected architecture images (e.g. `resiliosync-multiarch:latest`), you'll have to use `resiliosync-multiarch:armle-latest` directly.
 * `i386.Dockerfile`: For i386 aka x86 aka IA-32 (32 bit PC). Superseded by `amd64`. Docker Hub does not provided official support for this architecture.
-
-### Pulling the image from Docker Hub
-
-For the architectures included in the multiarch support (`amd64`, `armhf`, `arm64` and `i386`):
-
-    # docker pull outlyernet/resiliosync-multiarch
-
-which is equivalent to
-
-    # docker pull outlyernet/resiliosync-multiarch:latest
-
-may also use the version tag:
-
-    # docker pull outlyernet/resiliosync-multiarch:2.6.3
-
-As of this writing images for ARMv5 or ARMv6 (`armle`) are excluded from the automatic architecture selection mechanism, since Docker Hub doesn't appear to distinguish them from ARMv7. For those use:
-
-    # docker pull outlyernet/resiliosync-multiarch:latest-armle
-
-or
-
-    # docker pull outlyernet/resiliosync-multiarch:2.6.3-armle
 
 ### Links
 
