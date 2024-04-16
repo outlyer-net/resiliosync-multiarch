@@ -1,4 +1,17 @@
+[dockerhub]: https://hub.docker.com/r/outlyernet/resiliosync-multiarch
+[github]: https://github.com/outlyer-net/resiliosync-docker-multiarch
+
 ## Unofficial Multi-architecture Resilio Sync Docker files
+
+[![Static Badge](https://img.shields.io/badge/GitHub--_?style=social&logo=github)][github]
+![GitHub Release](https://img.shields.io/github/v/release/outlyer-net/resiliosync-docker-multiarch)
+![GitHub last commit](https://img.shields.io/github/last-commit/outlyer-net/resiliosync-docker-multiarch)
+
+
+[![Static Badge](https://img.shields.io/badge/Docker%20Hub--_?style=social&logo=docker)][dockerhub]
+![Docker Image Version](https://img.shields.io/docker/v/outlyernet/resiliosync-multiarch)
+![Docker Image Size](https://img.shields.io/docker/image-size/outlyernet/resiliosync-multiarch)
+
 
 This is a fork of the official [Resilio Sync for Docker repository](https://github.com/bt-sync/sync-docker) with small changes to be used on all architectures supported by Resilio Sync.
 
