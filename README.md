@@ -1,11 +1,12 @@
 [dockerhub]: https://hub.docker.com/r/outlyernet/resiliosync-multiarch
-[github]: https://github.com/outlyer-net/resiliosync-docker-multiarch
+[github]: https://github.com/outlyer-net/resiliosync-multiarch
 
 ## Unofficial Multi-architecture Resilio Sync Docker files
 
 [![Static Badge](https://img.shields.io/badge/GitHub--_?style=social&logo=github)][github]
-![GitHub Release](https://img.shields.io/github/v/release/outlyer-net/resiliosync-docker-multiarch)
-![GitHub last commit](https://img.shields.io/github/last-commit/outlyer-net/resiliosync-docker-multiarch)
+![GitHub Release](https://img.shields.io/github/v/release/outlyer-net/resiliosync-multiarch)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/outlyer-net/resiliosync-multiarch/deploy-image.yaml)
+![GitHub last commit](https://img.shields.io/github/last-commit/outlyer-net/resiliosync-multiarch)
 
 
 [![Static Badge](https://img.shields.io/badge/Docker%20Hub--_?style=social&logo=docker)][dockerhub]
@@ -99,8 +100,8 @@ The `Dockerfile`s:
 
 ### Links
 
-* [Docker Hub repository `outlyernet/resiliosync-multiarch`](https://hub.docker.com/r/outlyernet/resiliosync-multiarch)
-* [Github repository `outlyer-net/resiliosync-docker-multiarch`](https://github.com/outlyer-net/resiliosync-docker-multiarch)
+* [Docker Hub repository][dockerhub]: `outlyernet/resiliosync-multiarch`
+* [Github repository][github]: `outlyer-net/resiliosync-multiarch`
 
 ---
 > **Below is the official README**
