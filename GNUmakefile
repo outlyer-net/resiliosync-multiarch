@@ -18,6 +18,9 @@ RELEASE=$(shell sed -e '/ARG RELEASE=/!d' -e 's/^[^"]*//' -e 's/"//g' Dockerfile
 VERSIONED_IMAGES=$(addprefix $(IMAGE_NAME):$(RELEASE)-,$(ARCHITECTURES))
 EXTRA_VERSIONED_IMAGES=$(addprefix $(IMAGE_NAME):$(RELEASE)-,$(EXTRA_ARCHES))
 
+# override e.g. with make REGISTRY=ghcr.io
+REGISTRY=docker.io
+
 # Download URLs take the form:
 # https://download-cdn.resilio.com/$RELEASE/linux-$ARCH/resilio-sync_$ARCH.tar.gz
 # e.g.
@@ -66,25 +69,26 @@ tag: $(IMAGES_TARGET) $(EXTRA_IMAGES_TARGET)
 
 push-images: tag
 	for image in $(IMAGES) $(VERSIONED_IMAGES) $(EXTRA_IMAGES) $(EXTRA_VERSIONED_IMAGES); do \
-		docker push $$image ; \
+		docker tag $$image $(REGISTRY)/$$image ; \
+		docker push $(REGISTRY)/$$image ; \
 	done
 
 # The manifest doesn't include the EXTRA images
 manifest: push-images
 	env DOCKER_CLI_EXPERIMENTAL=enabled \
-		docker manifest create $(IMAGE_NAME):latest \
-			$(IMAGES)
+		docker manifest create $(REGISTRY)/$(IMAGE_NAME):latest \
+			$(addprefix $(REGISTRY)/,$(IMAGES))
 	env DOCKER_CLI_EXPERIMENTAL=enabled \
-		docker manifest create $(IMAGE_NAME):$(RELEASE) \
-			$(VERSIONED_IMAGES)	
+		docker manifest create $(REGISTRY)/$(IMAGE_NAME):$(RELEASE) \
+			$(addprefix $(REGISTRY)/,$(VERSIONED_IMAGES))
 
 # Forceful, but gets rid of trouble
 # <https://github.com/docker/cli/issues/954>
 push-manifest: manifest
 	env DOCKER_CLI_EXPERIMENTAL=enabled \
-		docker manifest push --purge $(IMAGE_NAME):latest
+		docker manifest push --purge $(REGISTRY)/$(IMAGE_NAME):latest
 	env DOCKER_CLI_EXPERIMENTAL=enabled \
-		docker manifest push --purge $(IMAGE_NAME):$(RELEASE)
+		docker manifest push --purge $(REGISTRY)/$(IMAGE_NAME):$(RELEASE)
 
 push: push-manifest
 
