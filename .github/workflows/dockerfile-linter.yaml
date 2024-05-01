@@ -1,0 +1,25 @@
+---
+# See https://github.com/hadolint/hadolint
+name: Run linter on Dockerfile
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  linter:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: Install docker
+        run: |
+          if ! which docker ; then
+            apt-get update -y
+            apt-get install -y --no-install-recommends docker.io
+          fi
+
+      - name: Lint dockerfile
+        run: docker run --rm -i ghcr.io/hadolint/hadolint hadolint --failure-threshold error - < Dockerfile
+        continue-on-error: false
