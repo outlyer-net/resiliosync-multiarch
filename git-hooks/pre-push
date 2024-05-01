@@ -1,5 +1,0 @@
-#!/bin/sh
-
-echo "***** [git pre-push hook]: Building images and publishing..."
-$RUN_PREFIX make push
-
