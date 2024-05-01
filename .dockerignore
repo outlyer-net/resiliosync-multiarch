@@ -1,3 +1,5 @@
 .git
 GNUmakefile
 *.md
+docker-compose
+.github
