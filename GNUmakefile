@@ -1,109 +1,44 @@
+#
+# Configurable variables, override by passing them to the make command, e.g. make REGISTRY=ghcr.io
+#
+REGISTRY:=docker.io
+IMAGE_NAME:=outlyernet/resiliosync-multiarch
+# Pass EXTRA_TAGS= to disable the default of adding :latest
+EXTRA_TAGS:=latest
 # Official and semi-official architectures: https://github.com/docker-library/official-images#architectures-other-than-amd64
-# TODO: Docker Hub doesn't appear to differentiate between armle and armhf
-ARCHITECTURES=amd64 armhf i386 arm64
-EXTRA_ARCHES=armle
-IMAGE_NAME=outlyernet/resiliosync-multiarch
-# Dockerfile.in: Dockerfile template
-DOCKERFILE_IN=Dockerfile.in
+PLATFORMS:=linux/amd64,linux/i386,linux/arm/v7,linux/arm64,linux/arm/v5
+# load or push
+ACTION:=load
 
-DOCKERFILES=$(addsuffix .Dockerfile,$(ARCHITECTURES))
-EXTRA_DOCKERFILES=$(addsuffix .Dockerfile,$(EXTRA_ARCHES))
-# The colon confuses make, leave it for later
-IMAGES_TARGET=$(addprefix $(IMAGE_NAME).latest-,$(ARCHITECTURES))
-EXTRA_IMAGES_TARGET=$(addprefix $(IMAGE_NAME).latest-,$(EXTRA_ARCHES))
-IMAGES=$(addprefix $(IMAGE_NAME):latest-,$(ARCHITECTURES))
-EXTRA_IMAGES=$(addprefix $(IMAGE_NAME):latest-,$(EXTRA_ARCHES))
+#
+# Computed variables
+#
+FQDN_IMAGE=$(REGISTRY)/$(IMAGE_NAME)
+ACTION_PARAM=$(addprefix --,$(ACTION))
+# tag1 tag2 ...
+ALL_TAGS=$(RELEASE) $(EXTRA_TAGS)
+# registry/image:tag1 registry/image:tag2 ...
+ALL_TAGS_FQDN=$(foreach tag,$(ALL_TAGS),$(FQDN_IMAGE):$(tag))
+# -t registry/image -t registry/image ...
+ALL_TAGS_PARAM=$(foreach full_tag,$(ALL_TAGS_FQDN),-t $(full_tag))
 
-RELEASE=$(shell sed -e '/ARG RELEASE=/!d' -e 's/^[^"]*//' -e 's/"//g' Dockerfile.in)
-VERSIONED_IMAGES=$(addprefix $(IMAGE_NAME):$(RELEASE)-,$(ARCHITECTURES))
-EXTRA_VERSIONED_IMAGES=$(addprefix $(IMAGE_NAME):$(RELEASE)-,$(EXTRA_ARCHES))
+all: multiarch-builder build
 
-# override e.g. with make REGISTRY=ghcr.io
-REGISTRY=docker.io
+build:
+	@# Debug with --progress plain, it displays printed outputs from layers
+	echo docker buildx build . \
+		$(ACTION_PARAM) \
+		-f Dockerfile \
+		--platform $(PLATFORMS) \
+		$(ALL_TAGS_PARAM)
 
-# Download URLs take the form:
-# https://download-cdn.resilio.com/$RELEASE/linux-$ARCH/resilio-sync_$ARCH.tar.gz
-# e.g.
-# https://download-cdn.resilio.com/2.6.3/linux-armhf/resilio-sync_armhf.tar.gz
-# The architecture names as per Resilio are i386, x64, arm and armhf. There is no ARMv8 tarball
-# BUT there is a DEB to be found at https://help.resilio.com/hc/en-us/articles/206178924
-# AND it can be found at https://download-cdn.resilio.com/*/linux-arm64/resilio-sync_arm64.tar.gz
-# despite not being linked at the download page
+# A new builder is required to build multiarch images
+multiarch-builder:
+	-docker buildx create --name multiarch --use
 
-# Translate the architecture names (resolution delayed to the actual rules)
-# Docker Hub prefix:
-# amd64 => amd64
-# armhf => arm32v7
-# arm64 => arm64v8
-# armle => arm32v5 [unofficial]
-# i386 => i386 [unofficial]
-# XXX: Is there no arm32v6 debian image?
-#DOCKER_PREFIX=$(shell echo $* | sed -e 's/armhf/arm32v7/' -e 's/armle/arm32v5/')
-DOCKER_PREFIX=$(subst armhf,arm32v7,$(subst armle,arm32v5,$(subst arm64,arm64v8,$*)))
-# Resilio's architecture name:
-# amd64 => x64
-# armhf => armhf
-# armle => arm
-# i386 => i386
-# arm64 => arm64
-#RESILIO_ARCH=$(shell echo $* | sed -e 's/armle/arm/' -e 's/amd64/x64/')
-RESILIO_ARCH=$(subst armle,arm,$(subst amd64,x64,$*))
+# Prints the list of tags to be used by build/push , useful to debug
+print-tags:
+	@echo Tags: $(addprefix "\n - ",$(ALL_TAGS))
+	@echo Tags with image name: $(addprefix "\n - ",$(ALL_TAGS_FQDN))
 
-all: $(DOCKERFILES) $(EXTRA_DOCKERFILES) $(IMAGES_TARGET) $(EXTRA_IMAGES_TARGET)
-
-%.Dockerfile: $(DOCKERFILE_IN)
-	sed -e 's#DOCKER_PREFIX=.*$$#DOCKER_PREFIX=$(DOCKER_PREFIX)#' \
-		-e 's!ARCHITECTURE=.*$$!ARCHITECTURE=$(RESILIO_ARCH)!' \
-		-e 's/armhf architecture\./$* architecture\./' $< > $@
-
-$(IMAGE_NAME).latest-%: %.Dockerfile
-	docker build -t $(subst .,:,$@) -f $< .
-
-# Add versioned tags to the images
-tag: $(IMAGES_TARGET) $(EXTRA_IMAGES_TARGET)
-	for image in $(IMAGES) $(EXTRA_IMAGES); do \
-		docker tag $$image `echo $$image | sed 's/latest/$(RELEASE)/g'`; \
-	done
-
-# Repository-specific stuff. Can only be used as-is by me
-
-push-images: tag
-	for image in $(IMAGES) $(VERSIONED_IMAGES) $(EXTRA_IMAGES) $(EXTRA_VERSIONED_IMAGES); do \
-		docker tag $$image $(REGISTRY)/$$image ; \
-		docker push $(REGISTRY)/$$image ; \
-	done
-
-# The manifest doesn't include the EXTRA images
-manifest: push-images
-	env DOCKER_CLI_EXPERIMENTAL=enabled \
-		docker manifest create $(REGISTRY)/$(IMAGE_NAME):latest \
-			$(addprefix $(REGISTRY)/,$(IMAGES))
-	env DOCKER_CLI_EXPERIMENTAL=enabled \
-		docker manifest create $(REGISTRY)/$(IMAGE_NAME):$(RELEASE) \
-			$(addprefix $(REGISTRY)/,$(VERSIONED_IMAGES))
-
-# Forceful, but gets rid of trouble
-# <https://github.com/docker/cli/issues/954>
-push-manifest: manifest
-	env DOCKER_CLI_EXPERIMENTAL=enabled \
-		docker manifest push --purge $(REGISTRY)/$(IMAGE_NAME):latest
-	env DOCKER_CLI_EXPERIMENTAL=enabled \
-		docker manifest push --purge $(REGISTRY)/$(IMAGE_NAME):$(RELEASE)
-
-push: push-manifest
-
-# Old variants. TODO: Merge
-
-#Dockerfile.ubuntu: ../Dockerfile
-#	sed 's/debian:stretch-slim/ubuntu/' $< > $@
-
-#Dockerfile.autobuild-debian: ../Dockerfile
-#	sed 's/#COPY qemu/COPY qemu/' $< > $@
-
-#Dockerfile.autobuild-ubuntu: Dockerfile.autobuild-debian
-#	sed 's/debian:stretch-slim/ubuntu/' $< > $@
-
-distclean:
-	$(RM) $(DOCKERFILES)
-
-.PHONY: all distclean
+.PHONY: all build multiarch-builder print-tags
