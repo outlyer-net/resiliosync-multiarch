@@ -26,7 +26,7 @@ all: multiarch-builder build
 
 build:
 	@# Debug with --progress plain, it displays printed outputs from layers
-	echo docker buildx build . \
+	docker buildx build . \
 		$(ACTION_PARAM) \
 		-f Dockerfile \
 		--platform $(PLATFORMS) \
