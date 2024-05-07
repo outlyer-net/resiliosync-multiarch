@@ -78,6 +78,11 @@ esac
 
 # See https://www.resilio.com/platforms/desktop/
 URL="https://download-cdn.resilio.com/$RELEASE/linux-$ARCHITECTURE/resilio-sync_$ARCHITECTURE.tar.gz"
+# NOTE: With 2.8.0 the URL format changes (old versions appear to remain in the old URLs).
+# XXX: Will the new url point to whatever is the latest version?
+if [ $RELEASE = '2.8.0' ]; then
+	URL="https://download-cdn.resilio.com/stable/linux/$ARCHITECTURE/0/resilio-sync_$ARCHITECTURE.tar.gz"
+fi
 
 echo "Downloading [$URL]" >&2
 wget -O "$OUTPUT" "$URL"

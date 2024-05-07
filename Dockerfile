@@ -1,4 +1,4 @@
-ARG RELEASE="2.7.3"
+ARG RELEASE="2.8.0"
 ARG BASE_IMAGE="debian:bookworm-slim"
 
 FROM ${BASE_IMAGE} AS download_stage

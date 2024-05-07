@@ -54,7 +54,7 @@ Docker will automatically pull the appropriate image for the architecture it is 
 
 Included architectures: _amd64_, _arm v5_, _arm v7_, _arm v8_ (aka _aarch64_) and _i386_.
 
-Each version is tagged with a semantic versioning scheme, e.g. `:2.7.3`. `:latest` always points to the most up to date version.
+Each version is tagged with a semantic versioning scheme, e.g. `:2.8.0`. `:latest` always points to the most up to date version.
 
 #### Pulling from Docker Hub
 
@@ -67,7 +67,7 @@ docker pull outlyernet/resiliosync-multiarch:latest
 ```
 or
 ```shell
-docker pull outlyernet/resiliosync-multiarch:2.7.3
+docker pull outlyernet/resiliosync-multiarch:2.8.0
 ```
 
 **NOTE:** Previous versions have separate tags for each architecture, I'm dropping these now that multiarch support in Docker is more widespread.
@@ -83,7 +83,7 @@ docker pull ghcr.io/outlyer-net/resiliosync-multiarch:latest
 ```
 or
 ```shell
-docker pull ghcr.io/outlyer-net/resiliosync-multiarch:2.7.3
+docker pull ghcr.io/outlyer-net/resiliosync-multiarch:2.8.0
 ```
 
 ### Build instructions
