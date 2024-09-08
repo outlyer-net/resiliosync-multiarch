@@ -1,11 +1,14 @@
 ARG RELEASE="2.8.0"
+ARG BUILD="1389"
 ARG BASE_IMAGE="debian:bookworm-slim"
 
 FROM ${BASE_IMAGE} AS download_stage
 ARG RELEASE
+ARG BUILD
 
 RUN apt-get update -y \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        binutils \
         ca-certificates \
         dpkg-dev \
         wget \
@@ -13,9 +16,11 @@ RUN apt-get update -y \
 
 COPY image-build-helpers/downloader.sh /
 
-RUN /downloader.sh "${RELEASE}" /tmp/sync.tgz
-
-RUN tar -xf /tmp/sync.tgz -C /tmp
+RUN /downloader.sh "${RELEASE}" "${BUILD}" \
+    && \
+    test -x /tmp/rslsync \
+    && \
+    test -f /tmp/LICENSE.TXT
 
 FROM ${BASE_IMAGE} AS final-stage
 

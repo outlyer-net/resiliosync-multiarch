@@ -15,12 +15,12 @@ set -e
 # despite not being linked at the download page
 
 if test -z "$2" ; then
-    echo "Usage: $0 <RESILIO_SYNC_VERSION> <OUTPUT_TARBALL>" >&2
+    echo "Usage: $0 <RESILIO_SYNC_VERSION> <BUILD>" >&2
     exit 1
 fi
 
 RELEASE="$1"
-OUTPUT="$2"
+BUILD="$2"
 
 ARCHITECTURE=`uname -r`
 # Figure out with:
@@ -58,17 +58,16 @@ ARCHITECTURE=`uname -r`
 # with <ARCH> one of amd64, arm64, armel, i386
 # <OS_ARCH> is armhf for the linux/arm64/v8 images and armel for the linux/arm/v7 images
 
-which dpkg-architecture
+which dpkg-architecture >/dev/null
 
 OS_ARCH=`dpkg-architecture 2>/dev/null | grep DEB_HOST_ARCH= | cut -f2 -d=`
 
 case "$OS_ARCH" in
-    amd64) ARCHITECTURE='x64' ;;
+    amd64) ARCHITECTURE='amd64' ;;
     i386) ARCHITECTURE='i386' ;;
     arm64) ARCHITECTURE='arm64' ;;
     armhf) ARCHITECTURE='armhf' ;;
-    # In practice I'm disabling the arm version since both v7l and v8 use armhf
-    arm|armel|arm*) ARCHITECTURE='arm' ;;
+    arm|armel|arm*) ARCHITECTURE='armel' ;;
     # TODO: 
     *)
         echo "Error, architecture: $OS_ARCH" >&2
@@ -77,14 +76,31 @@ case "$OS_ARCH" in
 esac
 
 # See https://www.resilio.com/platforms/desktop/
-URL="https://download-cdn.resilio.com/$RELEASE/linux-$ARCHITECTURE/resilio-sync_$ARCHITECTURE.tar.gz"
-# NOTE: With 2.8.0 the URL format changes (old versions appear to remain in the old URLs).
-# XXX: Will the new url point to whatever is the latest version?
-if [ $RELEASE = '2.8.0' ]; then
-	URL="https://download-cdn.resilio.com/stable/linux/$ARCHITECTURE/0/resilio-sync_$ARCHITECTURE.tar.gz"
-fi
+#URL="https://download-cdn.resilio.com/$RELEASE/linux-$ARCHITECTURE/resilio-sync_$ARCHITECTURE.tar.gz"
+# NOTES:
+#  - With 2.8.0 the URL format changed (old versions appear to remain in the old URLs).
+#  - The new url points to whatever is the current latest version
+#  - Starting with 2.8.1 I use the deb archives instead
+URL="https://download-cdn.resilio.com/stable/debian/$ARCHITECTURE/0/resilio-sync_$RELEASE.$BUILD-1_$ARCHITECTURE.deb"
+
+OUTPUT="pkg.deb"
 
 echo "Downloading [$URL]" >&2
 wget -O "$OUTPUT" "$URL"
 
 test -f "$OUTPUT"
+
+# Extract contents mimicking the structure of the tarball (and the older docker
+#  images'): binary and license only
+# Note the binary is the same in the deb and tarball
+ar x "$OUTPUT"
+tar -C /tmp -xf data.tar.* --strip-components 3 ./usr/bin/rslsync
+tar -C /tmp -xf data.tar.* --strip-components 5 ./usr/share/doc/resilio-sync/LICENSE.TXT
+
+# Special case
+if [ $RELEASE = "2.8.0" ]; then
+    RELEASE="2.8"
+fi
+
+# Validate version
+/tmp/rslsync --help 2>&1 | grep -q "Resilio Sync ${RELEASE} (${BUILD})"
